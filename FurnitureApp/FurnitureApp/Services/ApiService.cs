@@ -85,6 +85,7 @@ namespace FurnitureApp.Services
             return JsonConvert.DeserializeObject<List<ProductByCategory>>(response);
         }
 
+        //sss
         public static async Task<List<TrendingProduct>> GetTrendingProducts()
         {
             var httpClient = new HttpClient();
