@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FurnitureApp.Pages;
+using System;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -9,8 +11,16 @@ namespace FurnitureApp
         public App()
         {
             InitializeComponent();
+            var accessToken = Preferences.Get("userToken", string.Empty);
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                MainPage = new NavigationPage(new SignupPage());
+            }
+            else
+            {
+                MainPage = new NavigationPage(new HomePage());
 
-            MainPage = new MainPage();
+            }
         }
 
         protected override void OnStart()

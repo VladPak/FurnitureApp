@@ -71,7 +71,7 @@ namespace FurnitureApp.Services
         {
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "/api/products/" + productId);
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/products/" + productId);
 
             return JsonConvert.DeserializeObject<Product>(response);
         }
@@ -80,12 +80,12 @@ namespace FurnitureApp.Services
         {
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "/api/products/productsbycategory/" + categoryId);
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/products/productsbycategory/" + categoryId);
 
             return JsonConvert.DeserializeObject<List<ProductByCategory>>(response);
         }
 
-        //sssssssss
+        
         public static async Task<List<TrendingProduct>> GetTrendingProducts()
         {
             var httpClient = new HttpClient();
@@ -94,6 +94,112 @@ namespace FurnitureApp.Services
 
             return JsonConvert.DeserializeObject<List<TrendingProduct>>(response);
         }
+
+        public static async Task<bool> AddItemsInCart(AddToCart addtoCart)
+        {
+            var httpClient = new HttpClient();
+            var json = JsonConvert.SerializeObject(addtoCart);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+
+            var response = await httpClient.PostAsync(AppSettings.ApiUrl + "api/ShoppingCartItems", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public static async Task<CartSubTotal> GetCartSubTotal(int userId)
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/SubTotal/" + userId);
+
+            return JsonConvert.DeserializeObject<CartSubTotal>(response);
+        }
+
+        public static async Task<List<ShoppingCartItem>> GetShoppingCartItems(int userId)
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/" + userId);
+
+            return JsonConvert.DeserializeObject<List<ShoppingCartItem>>(response);
+        }
+
+        public static async Task<TotalCartItem> GetTotalCartItems(int cartId)
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/TotalItems/" + cartId);
+
+            return JsonConvert.DeserializeObject<TotalCartItem>(response);
+        }
+
+        public static async Task<bool> ClearShoppingCart(int cartId)
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+            var response = await httpClient.DeleteAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/" + cartId);
+
+            if (!response.IsSuccessStatusCode) return false;
+            return true;
+        }
+
+        public static async Task<OrderResponse> PlaceOrder(Order order)
+        {
+            var httpClient = new HttpClient();
+            var json = JsonConvert.SerializeObject(order);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+
+            var response = await httpClient.PostAsync(AppSettings.ApiUrl + "api/Orders", content);
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<OrderResponse>(jsonResult);
+        }
+
+        public static async Task<List<OrderByUser>> GetOrdersByUser(int userId)
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrdersByUser/" + userId);
+
+            return JsonConvert.DeserializeObject<List<OrderByUser>>(response);
+        }
+
         
+        public static async Task<List<OrderDetail>> GetOrderDetails(int orderId)
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrderDetails/" + orderId);
+
+            return JsonConvert.DeserializeObject<List<OrderDetail>>(response);
+        }
+
+        public static async Task<bool> RegisterComplaint(Complaint complaint)
+        {
+            var httpClient = new HttpClient();
+            var json = JsonConvert.SerializeObject(complaint);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
+
+            var response = await httpClient.PostAsync(AppSettings.ApiUrl + "api/Complaints", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        
+
+
     }
 }
