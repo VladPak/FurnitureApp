@@ -66,5 +66,13 @@ namespace FurnitureApp.Pages
             var response = await ApiService.GetTotalCartItems(Preferences.Get("userId", 0));
             LblTotalItems.Text = response.TotalItems.ToString();
         }
+
+        private void CvCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var currentSelection = e.CurrentSelection.FirstOrDefault() as Category;
+            if (currentSelection == null) return;
+            Navigation.PushModalAsync(new ProductListPage(currentSelection.Id, currentSelection.Name));
+            ((CollectionView)sender).SelectedItem = null;
+        }
     }
 }

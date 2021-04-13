@@ -12,5 +12,7 @@ namespace FurnitureApp.Models
         public string Detail { get; set; }
         public int CategoryId { get; set; }
         public string ImageUrl { get; set; }
+
+        public string FullImageUrl => AppSettings.ApiUrl + ImageUrl;
     }
 }

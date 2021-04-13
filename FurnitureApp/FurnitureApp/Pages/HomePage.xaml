@@ -94,7 +94,8 @@
                                    TextColor="#2C2C2C"/>
                             <CollectionView  x:Name="CvCategories"
                                              HeightRequest="200"
-                                             SelectionMode="Single">
+                                             SelectionMode="Single"
+                                             SelectionChanged="CvCategories_SelectionChanged">
                                 <CollectionView.ItemsLayout>
                                     <LinearItemsLayout Orientation="Horizontal" />
                                 </CollectionView.ItemsLayout>
