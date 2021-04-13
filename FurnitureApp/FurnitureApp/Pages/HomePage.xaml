@@ -72,7 +72,7 @@
                                TextColor="White"/>
                     </Frame>
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="TapCartIcon"/>
+                        <TapGestureRecognizer x:Name="TapCartIcon" Tapped="TapCartIcon_Tapped"/>
                     </Grid.GestureRecognizers>
                 </Grid>
             </Grid>

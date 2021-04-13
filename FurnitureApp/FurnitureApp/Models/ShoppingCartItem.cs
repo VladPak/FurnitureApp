@@ -13,5 +13,7 @@ namespace FurnitureApp.Models
         public string ProductName { get; set; }
         public string ImageUrl { get; set; }
 
+        public string FullImgUrl => AppSettings.ApiUrl + ImageUrl;
+
     }
 }

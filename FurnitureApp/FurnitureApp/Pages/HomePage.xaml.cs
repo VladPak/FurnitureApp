@@ -82,5 +82,10 @@ namespace FurnitureApp.Pages
             Navigation.PushModalAsync(new ProductDetailPage(currentSelection.Id));
             ((CollectionView)sender).SelectedItem = null;
         }
+
+        private void TapCartIcon_Tapped(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new CartPage());
+        }
     }
 }
