@@ -37,5 +37,14 @@ namespace FurnitureApp.Pages
         {
             Navigation.PopModalAsync();
         }
+
+        private void LvOrders_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            var currentSelection = e.SelectedItem as OrderByUser;
+            if (currentSelection == null) return;
+            Navigation.PushModalAsync(new OrderDetailPage(currentSelection.Id, currentSelection.OrderTotal));
+            ((ListView)sender).SelectedItem = null;
+            
+        }
     }
 }
