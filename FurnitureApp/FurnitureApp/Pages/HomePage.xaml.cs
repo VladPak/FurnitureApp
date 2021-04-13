@@ -56,8 +56,9 @@ namespace FurnitureApp.Pages
 
         private async void TapCloseMenu_Tapped(object sender, EventArgs e)
         {
-            await SlMenu.TranslateTo(-250, 0, 400, Easing.Linear);
-            GridOverlay.IsVisible = false;
+            //await SlMenu.TranslateTo(-250, 0, 400, Easing.Linear);
+            //GridOverlay.IsVisible = false;
+            CloseHamburerMenu();
         }
 
         protected override async void OnAppearing()
@@ -65,6 +66,18 @@ namespace FurnitureApp.Pages
             base.OnAppearing();
             var response = await ApiService.GetTotalCartItems(Preferences.Get("userId", 0));
             LblTotalItems.Text = response.TotalItems.ToString();
+        }
+
+        protected override void OnDisappearing()
+        {
+            CloseHamburerMenu();
+            base.OnDisappearing();
+        }
+
+        private async void CloseHamburerMenu()
+        {
+            await SlMenu.TranslateTo(-250, 0, 400, Easing.Linear);
+            GridOverlay.IsVisible = false;
         }
 
         private void CvCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -86,6 +99,11 @@ namespace FurnitureApp.Pages
         private void TapCartIcon_Tapped(object sender, EventArgs e)
         {
             Navigation.PushModalAsync(new CartPage());
+        }
+
+        private void TapOrders_Tapped(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new OrderPage());
         }
     }
 }
