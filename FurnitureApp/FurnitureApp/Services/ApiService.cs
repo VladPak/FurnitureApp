@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using System.Net.Http.Headers;
+using UnixTimeStamp;
 
 namespace FurnitureApp.Services
 {
@@ -55,29 +56,33 @@ namespace FurnitureApp.Services
                 Preferences.Set("userToken", result.AccessToken);
                 Preferences.Set("userId", result.UserId);
                 Preferences.Set("userName", result.UserName);
-                return true;
+                Preferences.Set("tokenExpTime", result.ExpirationTime);
+                Preferences.Set("currentTime", UnixTime.GetCurrentTime());
+
+            return true;
         }
 
         public static async Task<List<Category>> GetCategories()
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/categories");
-
             return JsonConvert.DeserializeObject<List<Category>>(response);
         }
 
         public static async Task<Product> GetProductById(int productId)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/products/" + productId);
-
             return JsonConvert.DeserializeObject<Product>(response);
         }
 
         public static async Task<List<ProductByCategory>> GetProductByCategory(int categoryId)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/products/productsbycategory/" + categoryId);
@@ -88,6 +93,7 @@ namespace FurnitureApp.Services
         
         public static async Task<List<TrendingProduct>> GetTrendingProducts()
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/products/trendingproducts");
@@ -97,6 +103,7 @@ namespace FurnitureApp.Services
 
         public static async Task<bool> AddItemsInCart(AddToCart addtoCart)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             var json = JsonConvert.SerializeObject(addtoCart);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -115,6 +122,7 @@ namespace FurnitureApp.Services
 
         public static async Task<CartSubTotal> GetCartSubTotal(int userId)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/SubTotal/" + userId);
@@ -124,6 +132,7 @@ namespace FurnitureApp.Services
 
         public static async Task<List<ShoppingCartItem>> GetShoppingCartItems(int userId)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/" + userId);
@@ -133,6 +142,7 @@ namespace FurnitureApp.Services
 
         public static async Task<TotalCartItem> GetTotalCartItems(int cartId)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/TotalItems/" + cartId);
@@ -142,6 +152,7 @@ namespace FurnitureApp.Services
 
         public static async Task<bool> ClearShoppingCart(int cartId)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.DeleteAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/" + cartId);
@@ -152,6 +163,7 @@ namespace FurnitureApp.Services
 
         public static async Task<OrderResponse> PlaceOrder(Order order)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             var json = JsonConvert.SerializeObject(order);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -164,16 +176,17 @@ namespace FurnitureApp.Services
 
         public static async Task<List<OrderByUser>> GetOrdersByUser(int userId)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrdersByUser/" + userId);
-
             return JsonConvert.DeserializeObject<List<OrderByUser>>(response);
         }
 
         
         public static async Task<List<OrderDetail>> GetOrderDetails(int orderId)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("userToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrderDetails/" + orderId);
@@ -183,6 +196,7 @@ namespace FurnitureApp.Services
 
         public static async Task<bool> RegisterComplaint(Complaint complaint)
         {
+            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             var json = JsonConvert.SerializeObject(complaint);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -199,7 +213,21 @@ namespace FurnitureApp.Services
             }
         }
         
+    }
 
-
+    public static class TokenValidator
+    {
+        public static async Task CheckTokenValidity()
+        {
+            var expTime = Preferences.Get("tokenExpTime", 0);
+            Preferences.Set("currentTime", UnixTime.GetCurrentTime());
+            var  currentTime = Preferences.Get("currentTime", 0);
+            if (expTime < currentTime)
+            {
+                var email = Preferences.Get("email", string.Empty);
+                var password = Preferences.Get("password", string.Empty);
+                await ApiService.Login(email, password);
+            }
+        }
     }
 }

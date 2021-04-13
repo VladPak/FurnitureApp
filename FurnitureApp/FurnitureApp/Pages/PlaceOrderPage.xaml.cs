@@ -38,7 +38,6 @@ namespace FurnitureApp.Pages
             else
             {
                 await DisplayAlert("", "Smth wrong", "Ok");
-
             }
         }
 

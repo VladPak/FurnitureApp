@@ -115,5 +115,12 @@ namespace FurnitureApp.Pages
         {
             Navigation.PushModalAsync(new CartPage());
         }
+
+        private void TapLogout_Tapped(object sender, EventArgs e)
+        {
+            Preferences.Set("userToken", string.Empty);
+            Preferences.Set("tokenExpTime", 0);
+            Application.Current.MainPage = new NavigationPage(new SignupPage());
+        }
     }
 }
