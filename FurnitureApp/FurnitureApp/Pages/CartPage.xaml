@@ -113,7 +113,7 @@
                         BackgroundColor="#FA6400"
                         TextColor="White"
                         Text="Proceed"
-                        x:Name="BtnProceed"/>
+                        x:Name="BtnProceed" Clicked="BtnProceed_Clicked"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
